@@ -28,6 +28,8 @@ class JsonIntegrationTests(unittest.TestCase):
         self.assertTrue(s_data['Ex'] == str(system.economic_x))
         self.assertTrue(s_data['Cx'] == str(system.cultural_x))
         self.assertTrue(s_data['pbg'] == str(system.pbg))
+        self.assertTrue(s_data['parent_world'] == system.parent_world)
+        self.assertTrue(s_data['parent_orbit'] == system.parent_orbit)
 
     def compare_dict_to_planet(self, p_data, planet):
         '''Compare p_data dict to planet'''

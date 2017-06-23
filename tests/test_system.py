@@ -23,10 +23,25 @@ class TestJson(unittest.TestCase):
         self.assertTrue(s_data['Ex'] == str(system.economic_x))
         self.assertTrue(s_data['Cx'] == str(system.cultural_x))
         self.assertTrue(s_data['pbg'] == str(system.pbg))
+        self.assertTrue(s_data['parent_world'] == system.parent_world)
+        self.assertTrue(s_data['parent_orbit'] == system.parent_orbit)
 
     def test_json_importer(self):
         '''Test system.json_import() importer'''
-        jdata = '{"mainworld": "{\\"trade_codes\\": [\\"Ni\\"], \\"travel_code\\": \\"\\", \\"is_mainworld\\": true, \\"uwp\\": \\"E510423-8\\", \\"orbit\\": 7, \\"bases\\": \\"\\"}", "worlds": 5, "allegiance": "Na", "stellar": "{\\"decimal\\": 2, \\"companion\\": \\"{\\\\\\"habitable_zone\\\\\\": 7, \\\\\\"spectral_type\\\\\\": \\\\\\"A\\\\\\", \\\\\\"companion\\\\\\": null, \\\\\\"decimal\\\\\\": 7, \\\\\\"size\\\\\\": \\\\\\"V\\\\\\"}\\", \\"habitable_zone\\": 7, \\"spectral_type\\": \\"A\\", \\"secondaries\\": {}, \\"size\\": \\"V\\"}", "Ix": "{-3}", "name": "", "zone": "", "Cx": "[511C]", "hex": "0000", "pbg": "001", "bases": "", "Ex": "(A31+2)", "nobility": "B"}'
+        jdata = '{"mainworld": "{\\"trade_codes\\": [\\"Ni\\"], ' +\
+            '\\"travel_code\\": \\"\\", \\"is_mainworld\\": true, ' +\
+            '\\"uwp\\": \\"E510423-8\\", \\"orbit\\": 7, \\"bases\\": ' +\
+            '\\"\\"}", "worlds": 5, "allegiance": "Na", "stellar": ' +\
+            '"{\\"decimal\\": 2, \\"companion\\": ' +\
+            '\\"{\\\\\\"habitable_zone\\\\\\": 7, ' +\
+            '\\\\\\"spectral_type\\\\\\": \\\\\\"A\\\\\\", ' +\
+            '\\\\\\"companion\\\\\\": null, \\\\\\"decimal\\\\\\": 7, ' +\
+            '\\\\\\"size\\\\\\": \\\\\\"V\\\\\\"}\\", ' +\
+            '\\"habitable_zone\\": 7, \\"spectral_type\\": \\"A\\", ' +\
+            '\\"secondaries\\": {}, \\"size\\": \\"V\\"}", "Ix": "{-3}", ' +\
+            '"name": "", "zone": "", "Cx": "[511C]", "hex": "0000", "pbg": ' +\
+            '"001", "bases": "", "Ex": "(A31+2)", "nobility": "B", ' +\
+            '"parent_orbit": null, "parent_world": null}'
         s_data = json.loads(jdata)
         system = System()
         system.json_import(jdata)
@@ -39,3 +54,5 @@ class TestJson(unittest.TestCase):
         self.assertTrue(s_data['Ex'] == str(system.economic_x))
         self.assertTrue(s_data['Cx'] == str(system.cultural_x))
         self.assertTrue(s_data['pbg'] == str(system.pbg))
+        self.assertTrue(s_data['parent_world'] == system.parent_world)
+        self.assertTrue(s_data['parent_orbit'] == system.parent_orbit)

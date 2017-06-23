@@ -38,12 +38,24 @@ class System(object):
     mw_orbit_flux_table.add_row((3, 5), 1)
     mw_orbit_flux_table.add_row(6, 2)
 
+    mw_type_flux_table = Table()
+    mw_type_flux_table.add_row((-5, -4), 'Far Satellite')
+    mw_type_flux_table.add_row(-3, 'Close Satellite')
+    mw_type_flux_table.add_row((-2, 5), 'Planet')
+
+    parent_type_flux_table = Table()
+    parent_type_flux_table.add_row((-5, 0), 'Gas Giant')
+    parent_type_flux_table.add_row((1, 5), 'BigWorld')
+
     def __init__(self, name='', location_hex='0000'):
         self.hex = location_hex
         self.name = name
+        self.parent_orbit = None
+        self.parent_world = None
         self.stellar = Primary()
         self.mainworld = Planet()
         self.determine_mw_orbit()
+        self.determine_mainworld_type()
 
         self.bases = self.determine_bases()
         self.pbg = Pbg(self.mainworld)
@@ -152,7 +164,7 @@ class System(object):
     def determine_trade_codes(self):
         '''Determine climate trade codes'''
         tcs = TradeCodes(self.mainworld, self)
-        self.mainworld.trade_codes = tcs.generate()
+        self.mainworld.trade_codes.extend(tcs.generate())
 
     def determine_mw_orbit(self):
         '''Determine mainworld orbit'''
@@ -160,6 +172,39 @@ class System(object):
             self.mw_orbit_flux_table.lookup(FLUX.flux())
         orbit = max(orbit, 0)
         self.mainworld.orbit = orbit
+
+    def determine_mainworld_type(self):
+        '''Determine mainworld type (planet, close/far satellite)'''
+        close_orbits = ['Ay', 'Bee', 'Cee', 'Dee', 'Ee', 'Eff',
+                        'Gee', 'Aitch', 'Eye', 'Jay', 'Kay', 'Ell', 'Em']
+        far_orbits = ['En', 'Oh', 'Pee', 'Que', 'Arr', 'Ess',
+                      'Tee', 'Yu', 'Vee', 'Dub', 'Ex', 'Wye', 'Zee']
+        if int(self.mainworld.size) == 0:
+            # Asteroid belt => planet
+            self.mainworld_type = 'Planet'
+        else:
+            self.mainworld_type = self.mw_type_flux_table.lookup(FLUX.flux())
+        if self.mainworld_type == 'Planet':
+            self.parent_world = None
+            self.parent_orbit = None
+        elif self.mainworld_type == 'Close Satellite':
+            self.mainworld.trade_codes.append('Lk')
+            self.parent_world = self.parent_type_flux_table.lookup(FLUX.flux())
+            roll = FLUX.flux()
+            if self.parent_world == 'Gas Giant':
+                roll -= 2
+            roll = max(roll, -6)
+            roll = min(roll, 6)
+            self.parent_orbit = close_orbits[roll + 6]
+        elif self.mainworld_type == 'Far Satellite':
+            self.mainworld.trade_codes.append('Sa')
+            self.parent_world = self.parent_type_flux_table.lookup(FLUX.flux())
+            roll = FLUX.flux()
+            if self.parent_world == 'Gas Giant':
+                roll -= 2
+            roll = max(roll, -6)
+            roll = min(roll, 6)
+            self.parent_orbit = far_orbits[roll + 6]
 
     def as_json(self):
         '''Return JSON representation of system'''
@@ -176,7 +221,9 @@ class System(object):
             'Cx': str(self.cultural_x),
             'nobility': self.nobility,
             'worlds': self.num_worlds,
-            'zone': self.zone
+            'zone': self.zone,
+            'parent_world': self.parent_world,
+            'parent_orbit': self.parent_orbit
         }
         return json.dumps(system_dict)
 
@@ -196,6 +243,11 @@ class System(object):
         self.importance_x.json_import(system_dict['Ix'])
         self.economic_x.json_import(system_dict['Ex'])
         self.cultural_x.json_import(system_dict['Cx'])
+        try:
+            self.parent_orbit = system_dict['parent_orbit']
+            self.parent_world = system_dict['parent_world']
+        except KeyError:
+            self.determine_mainworld_type()
 
 
 class Pbg(object):
