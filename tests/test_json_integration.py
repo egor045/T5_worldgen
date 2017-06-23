@@ -5,13 +5,13 @@ import unittest
 import json
 import logging
 
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
-
+from T5_worldgen import upp
 from T5_worldgen.system import System
 from T5_worldgen.star import _Star, Primary
 from T5_worldgen.planet import Planet
-from T5_worldgen import upp
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
 
 SAMPLE_SIZE = 1000
 
@@ -47,7 +47,7 @@ class JsonIntegrationTests(unittest.TestCase):
         self.assertTrue(s_data['decimal'] == star.decimal)
         self.assertTrue(s_data['habitable_zone'] == star.habitable_zone)
         if s_data['companion'] is None:
-            self.assertTrue(star.companion == None)
+            self.assertTrue(star.companion is None)
         else:
             c_data = json.loads(s_data['companion'])
             self.assertTrue(
@@ -84,7 +84,7 @@ class JsonIntegrationTests(unittest.TestCase):
                     c_data['habitable_zone'] == \
                         obj_data.companion.habitable_zone)
             else:
-                self.assertTrue(obj_data.companion == None)
+                self.assertTrue(obj_data.companion is None)
 
     def test_export_import(self):
         '''Test re-import of exported data'''
