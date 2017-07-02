@@ -38,12 +38,12 @@ class System(object):
     mw_orbit_flux_table.add_row((3, 5), 1)
     mw_orbit_flux_table.add_row(6, 2)
 
-    def __init__(self, name='', location_hex='0000'):
+    def __init__(self, name='', location_hex='0000', pop_0_cascade=False):
         self.hex = location_hex
         self.name = name
         self.zone = ''
         self.stellar = Primary()
-        self.mainworld = Planet()
+        self.mainworld = Planet(pop_0_cascade=pop_0_cascade)
         self.determine_mw_orbit()
 
         self.bases = self.determine_bases()

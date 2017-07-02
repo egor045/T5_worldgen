@@ -83,3 +83,15 @@ class TestTravelZones(unittest.TestCase):
         system.mainworld.law_level = uwp.LawLevel('5')
         system.determine_travel_zone(False)
         self.assertFalse(system.zone == 'R')
+
+
+class TestPop0Cascade(unittest.TestCase):
+    '''Test pop == 0 => gov, ll = 0'''
+    def test_pop_0_cascade(self):
+        '''Test pop 0 cascade'''
+        system = System(pop_0_cascade=True)
+        system.mainworld.population = 0
+        system.mainworld.determine_government()
+        system.mainworld.determine_law()
+        self.assertTrue(int(system.mainworld.government) == 0)
+        self.assertTrue(int(system.mainworld.law_level) == 0)

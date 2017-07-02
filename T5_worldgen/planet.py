@@ -33,7 +33,7 @@ class Planet(object):
     spaceport_table.add_row(3, 'G')
     spaceport_table.add_row((4, 6), 'F')
 
-    def __init__(self, system=None):
+    def __init__(self, system=None, pop_0_cascade=False):
         self.starport = '?'
         self.size = uwp.Size()
         self.atmosphere = uwp.Atmosphere()
@@ -43,6 +43,7 @@ class Planet(object):
         self.government = uwp.Government()
         self.law_level = uwp.LawLevel()
         self.tech_level = uwp.TechLevel()
+        self._pop_0_cascade = pop_0_cascade
 
         self.trade_codes = []
         self.travel_code = ''
@@ -124,17 +125,23 @@ class Planet(object):
 
     def determine_government(self):
         '''Set government'''
-        roll = FLUX.flux() + int(self.population)
-        roll = min(roll, 15)
-        roll = max(roll, 0)
-        self.government = uwp.Government(roll)
+        if self._pop_0_cascade and self.population == 0:
+            self.government = 0
+        else:
+            roll = FLUX.flux() + int(self.population)
+            roll = min(roll, 15)
+            roll = max(roll, 0)
+            self.government = uwp.Government(roll)
 
     def determine_law(self):
         '''Set law level'''
-        roll = FLUX.flux() + int(self.government)
-        roll = min(roll, 18)
-        roll = max(roll, 0)
-        self.law_level = uwp.LawLevel(roll)
+        if self._pop_0_cascade and self.government == 0:
+            self.law_level = 0
+        else:
+            roll = FLUX.flux() + int(self.government)
+            roll = min(roll, 18)
+            roll = max(roll, 0)
+            self.law_level = uwp.LawLevel(roll)
 
     def determine_tech(self):
         '''Set tech level'''
